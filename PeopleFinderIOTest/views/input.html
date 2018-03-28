@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <script src="/socket.io/socket.io.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <script>
+        $(document).ready(function(){
+            $("#loading").hide();
+            var socket = io();
+            var socketId;
+
+            // on submit form
+            $("form").submit(function(e){
+                e.preventDefault();
+                $.ajax({
+                     type: "POST",
+                     data: {'domain': $("#domain").val(), 'title': $("#title").val(), 'socketId': socketId}
+                    });
+                $(".result").remove();
+                $("#loading").show();
+                return false;
+            });
+
+            // assigning a socket id
+            socket.on('message', function(id) {
+                socketId = id;
+                $("#socketId").val(socketId);
+            });
+
+            // show query results
+            socket.on('results ready',function(results){
+                $('#loading').hide();
+                results.forEach((person) => {
+                var addRowText = "<div class='row result'>"
+                        + "<div class='col-md-2 photo'><img src='" + person.photo + "' alt='" + person.name + "'></div>"
+                        + "<div class='col-md-8'>"
+                            + "<div class='name'>" + person.name + "</div>"
+                            + "<div class='title'>" + person.title + "</div>"
+                            + "<div class='location'>" + person.location + "</div>"
+                        + "</div>"
+                        + "<div class='linkedin col-md-1'><a href='" + person.linkedIn + "'><img src='img/linkedin-logo.png' alt='" + person.linkedIn + "'></a></div>"
+                    + "</div>";
+                    $("#results").append(addRowText);
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <div class="pageContent">
+            <div class="center">
+                <form method="post" id="form" class="form-inline">
+                    <div class="form-group col-md-5">
+                        <input type="text" name="domain" id="domain" placeholder="Domain" class="form-control" pattern=".+[.].+" title="Domain must contain a period (i.e. domain.com)">
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="text" name="title" id="title" placeholder="Title" class="form-control">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <input type="submit" value="search" id="submitButton" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+            <div class="resultsContainer center">
+                <div id="results">
+                    <div id="loading" class="center">Please wait while the query is being processed...</div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
