@@ -88,7 +88,7 @@ Util.forEach = (arr, i, func, callback) => {
 // replace undefined by empty string
 Util.replaceUndefinedbyEmptyString = (value) => {
   let output = value;
-  if (!value) {
+  if (!value && typeof value != "number") { // avoid converting 0 to ""
     output = '';
   }
   return output;

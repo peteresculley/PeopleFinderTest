@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "companyIO handles all the company data from ***.io.",
   "author": "Peter Sculley",
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
     "babel-eslint": "^8.0.1",
     "body-parser": "^1.17.2",
